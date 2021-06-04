@@ -1,7 +1,9 @@
 const {User} = require('../models');
 
 exports.create_user = async (req, res) => {
+    console.log("creating user");
     try {
+        console.log(req.body);
         const {name, email, password, age, address} = req.body;
 
         const user = await User.create({name, email, password, age, address})
@@ -55,7 +57,9 @@ exports.get_user_byId = async (req, res) => {
 
 exports.update_user = async (req, res) => {
     try {
+        console.log("updating user");
         const id = req.params.userId;
+        console.log("updating user",id);
         const {name, email, password, age, address} = req.body
 
         const user = await User.update({name, email, password, age, address, });
@@ -64,6 +68,7 @@ exports.update_user = async (req, res) => {
             user: user
         });
     } catch (err) {
+        console.log("error", err);
         res.status(500).json({
             error: err
         });
