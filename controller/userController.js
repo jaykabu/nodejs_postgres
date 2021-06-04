@@ -62,7 +62,10 @@ exports.update_user = async (req, res) => {
         console.log("updating user",id);
         const {name, email, password, age, address} = req.body
 
-        const user = await User.update({name, email, password, age, address, });
+        const user = await User.update(
+            {name, email, password, age, address, id },
+            {where : {id}}
+        );
         res.status(200).json({
             message: 'update user successfully',
             user: user
