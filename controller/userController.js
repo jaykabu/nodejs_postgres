@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const {User} = require('../models');
 
 exports.create_user = async (req, res) => {
@@ -7,10 +8,25 @@ exports.create_user = async (req, res) => {
         const {name, email, password, age, address} = req.body;
 
         const user = await User.create({name, email, password, age, address})
-        res.status(201).json({
-            message: 'Create user successfully',
-            user: user
+
+        await bcrypt.hash(user.password, 10, function (err, hash) {
+            if (err) {
+                throw err
+            } else {
+                res.status(201).json({
+                    message: 'Create user successfully',
+                    user: {
+                        name: user.name,
+                        email: user.email,
+                        password: hash,
+                        age: user.age,
+                        address: user.address
+                    }
+                });
+            }
         })
+
+
     } catch (err) {
         res.status(500).json({
             error: err
@@ -59,12 +75,12 @@ exports.update_user = async (req, res) => {
     try {
         console.log("updating user");
         const id = req.params.userId;
-        console.log("updating user",id);
+        console.log("updating user", id);
         const {name, email, password, age, address} = req.body
 
         const user = await User.update(
-            {name, email, password, age, address, id },
-            {where : {id}}
+            {name, email, password, age, address, id},
+            {where: {id}}
         );
         res.status(200).json({
             message: 'update user successfully',
