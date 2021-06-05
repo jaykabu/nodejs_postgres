@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const {User} = require('../models');
+const jwt = require('jsonwebtoken')
 
 exports.create_user = async (req, res) => {
     try {
@@ -7,25 +8,24 @@ exports.create_user = async (req, res) => {
             if (err) {
                 throw err
             } else {
-                const user = User.create({
+                User.create({
                     name: req.body.name,
                     email: req.body.email,
                     password: hash,
                     age: req.body.age,
                     address: req.body.address
-                })
-                res.status(201).json({
-                    message: 'User created successfully',
-                    user: {
-                        name: user.name,
-                        email: user.email,
-                        password: user.password,
-                        age: user.age,
-                        address: user.address
-                    }
+                }).then(result => {
+                    res.status(201).json({
+                        message: 'User created successfully',
+                        user: result
+                    });
+                }).catch(err => {
+                    res.status(500).json({
+                        error: err
+                    });
                 });
             }
-        })
+        });
     } catch (err) {
         res.status(500).json({
             error: err
@@ -123,8 +123,19 @@ exports.login_user = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (isMatch) {
+            const token = jwt.sign(
+                {
+                    email: user.email,
+                    userId: user.id,
+                },
+                "secret",
+                {
+                    expiresIn: "1h",
+                },
+            );
             res.status(200).json({
                 message: 'Login user successfully',
+                token: token
             })
         } else {
             res.status(500).json({
@@ -137,5 +148,3 @@ exports.login_user = async (req, res) => {
         })
     }
 };
-
-// const isMatch = await bcrypt.compare(password, findUser.password);
