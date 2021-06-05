@@ -2,31 +2,30 @@ const bcrypt = require('bcrypt');
 const {User} = require('../models');
 
 exports.create_user = async (req, res) => {
-    console.log("creating user");
     try {
-        console.log(req.body);
-        const {name, email, password, age, address} = req.body;
-
-        const user = await User.create({name, email, password, age, address})
-
-        await bcrypt.hash(user.password, 10, function (err, hash) {
+        await bcrypt.hash(req.body.password, 10, function (err, hash) {
             if (err) {
                 throw err
             } else {
+                const user = User.create({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: hash,
+                    age: req.body.age,
+                    address: req.body.address
+                })
                 res.status(201).json({
-                    message: 'Create user successfully',
+                    message: 'User created successfully',
                     user: {
                         name: user.name,
                         email: user.email,
-                        password: hash,
+                        password: user.password,
                         age: user.age,
                         address: user.address
                     }
                 });
             }
         })
-
-
     } catch (err) {
         res.status(500).json({
             error: err
@@ -73,9 +72,9 @@ exports.get_user_byId = async (req, res) => {
 
 exports.update_user = async (req, res) => {
     try {
-        console.log("updating user");
+        // console.log("updating user");
         const id = req.params.userId;
-        console.log("updating user", id);
+        // console.log("updating user", id);
         const {name, email, password, age, address} = req.body
 
         const user = await User.update(
@@ -87,7 +86,7 @@ exports.update_user = async (req, res) => {
             user: user
         });
     } catch (err) {
-        console.log("error", err);
+        // console.log("error", err);
         res.status(500).json({
             error: err
         });
@@ -109,6 +108,34 @@ exports.delete_user = async (req, res) => {
             user
         });
     } catch (err) {
-
+        res.status(500).json({
+            error: err
+        });
     }
 }
+
+exports.login_user = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+
+        const user = await User.findOne({where: {email: email}});
+        console.log('user', user);
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (isMatch) {
+            res.status(200).json({
+                message: 'Login user successfully',
+            })
+        } else {
+            res.status(500).json({
+                mesaage: 'Email and password incorrect!'
+            })
+        }
+    } catch (e) {
+        res.status(500).json({
+            message: 'User auth failed'
+        })
+    }
+};
+
+// const isMatch = await bcrypt.compare(password, findUser.password);
