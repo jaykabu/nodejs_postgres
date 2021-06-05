@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const {User} = require('../models');
 const jwt = require('jsonwebtoken')
 
-exports.create_user = async (req, res) => {
+module.exports.create_user = async (req, res) => {
     try {
         await bcrypt.hash(req.body.password, 10, function (err, hash) {
             if (err) {
