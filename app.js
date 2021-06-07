@@ -4,6 +4,7 @@ const {sequelize} = require('./models');
 
 const userRoute = require('./routes/userRoute');
 const productRoute = require('./routes/productRoute');
+const orderRoute = require('./routes/orderRoute');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(morgen('dev'));
 
 app.use('/api/user', userRoute);
 app.use('/api/product', productRoute);
+app.use('/api/order', orderRoute);
 
 app.listen(3000, async () => {
     console.log('server running on 3000');
