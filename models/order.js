@@ -23,9 +23,13 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         tableName: 'Orders',
         modelName: 'Order',
+        timestamps: false
     });
+    //using Product id
     Order.associate = function (models) {
-        Order.belongsTo(models.Product, {foreignKey: 'productId', as: 'product'})
+        Order.belongsTo(models.Product, {
+            foreignKey: 'productId', as: 'product'
+        })
     }
     return Order;
 };

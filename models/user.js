@@ -17,16 +17,23 @@ module.exports = (sequelize, DataTypes) => {
     User.init({
         name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                min:  2,
+                max: 15
+            }
         },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            validate: {
+                isEmail: true,
+            },
+            unique: [true, 'Email already exist']
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
         age: {
             type: DataTypes.STRING,
@@ -40,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         tableName: 'Users',
         modelName: 'User',
+        timestamps: false
     });
     return User;
 };

@@ -57,7 +57,7 @@ exports.get_user_byId = async (req, res) => {
         })
         if (!user) {
             res.status(404).json({
-                message: 'Id not exist',
+                message: 'User not found',
             });
         }
         res.status(200).json({
@@ -100,7 +100,7 @@ exports.delete_user = async (req, res) => {
         const user = await User.destroy({where: {id}});
         if (!user) {
             res.status(404).json({
-                message: 'Id already deleted',
+                message: 'User not found',
             });
         }
         res.status(200).json({
